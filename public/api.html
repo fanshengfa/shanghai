@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/vendor/laravel-admin/AdminLTE/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <meta charset="utf8">
+    <style type="text/css">
+      form fieldset div {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+      <h1>司机相关接口</h1>
+
+    <h2>司机登录</h2>
+    <form method="post" action="/api/driver/signin">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>driver/signin</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            手机号码
+            <input name="mobile" value="15100000000">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            密码
+            <input name="pwd" value="123456">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            设备唯一号
+            <input name="deviceid" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            个推clientid
+            <input name="clientid" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            设备的平台
+            <select name="platform">
+              <option value="android">android</option>
+              <option value="ios">ios</option>
+            </select>
+          </label>
+        </div>
+
+        <div>
+          <label>
+            系统版本
+            <input name="system_version" value="4.2">
+          </label>
+        </div>
+        <div>
+          <label>
+            品牌
+            <input name="brand" value="华为">
+          </label>
+        </div>
+        <div>
+          <label>
+            手机型号
+            <input name="model" value="荣耀">
+          </label>
+        </div>
+        <div>
+          <label>
+            消息推送id
+            <input name="push_channel_id" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>司机退出登录</h2>
+    <form method="post" action="/api/driver/signout">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>driver/signout</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>司机修改密码</h2>
+    <form method="post" action="/api/driver/resetpwd">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>driver/resetpwd</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            原密码
+            <input name="opwd" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            新密码
+            <input name="npwd" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>司机上报地点</h2>
+    <form method="post" action="/api/driver/locationReport">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>driver/locationReport</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            lat
+            <input name="lat" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            lng
+            <input name="lng" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h1>任务相关接口</h1>
+
+    <h2>执行中的任务列表</h2>
+    <form method="get" action="/api/task/executing">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/executing</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>GET</em>
+        </h3>
+        <div>
+          <label>
+            当前司机的id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            最后一条数据的下标
+            <input name="last_index" value="0">
+          </label>
+        </div>
+        <div>
+          <label>
+            每次需要加载的数据条目数
+            <input name="count" value="10">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>任务详情（运单详情）</h2>
+    <form method="get" action="/api/task/detail">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/detail</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>GET</em>
+        </h3>
+        <div>
+          <label>
+            当前司机的id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>历史任务</h2>
+    <form method="get" action="/api/task/history">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/history</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>GET</em>
+        </h3>
+        <div>
+          <label>
+            当前司机的id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            最后一条数据的下标
+            <input name="last_index" value="0">
+          </label>
+        </div>
+        <div>
+          <label>
+            每次需要加载的数据条目数
+            <input name="count" value="10">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>接受任务</h2>
+    <form method="post" action="/api/task/accept">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/accept</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>拒绝任务</h2>
+    <form method="post" action="/api/task/reject">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/reject</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>出发（前往目的地）</h2>
+    <form method="post" action="/api/task/start">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/start</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            要前往的地点id
+            <input name="place_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>到达（到达目的地）</h2>
+    <form method="post" action="/api/task/arrived">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/arrived</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            要前往的地点id
+            <input name="place_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>装车</h2>
+    <form method="post" action="/api/task/loading">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/loading</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            要前往的地点id
+            <input name="place_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>装车完成</h2>
+    <form method="post" action="/api/task/loadingSuccess">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/loadingSuccess</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            要前往的地点id
+            <input name="place_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>卸车</h2>
+    <form method="post" action="/api/task/unloading">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/unlading</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            要前往的地点id
+            <input name="place_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>卸车完成</h2>
+    <form method="post" action="/api/task/unloadingSuccess">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/unloadingSuccess</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            要前往的地点id
+            <input name="place_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>某个地点完成任务</h2>
+    <form method="post" action="/api/task/placeSuccess">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/unlading_success</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            地点id
+            <input name="place_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>任务完成回车场</h2>
+    <form method="post" action="/api/task/goback">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/goback</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>任务完到达车场</h2>
+    <form method="post" action="/api/task/gothome">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/gothome</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>提交核销</h2>
+    <form method="post" action="/api/task/writeoff">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/writeoff</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>任务意外停止</h2>
+    <form method="post" action="/api/task/stop">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/stop</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>任务暂停</h2>
+    <form method="post" action="/api/task/pause">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/pause</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            暂停类型
+            <select name="type">
+              <option value="rest">休息</option>
+              <option value="gas">加油</option>
+              <option value="maintain">修车</option>
+              <option value="traffic_jam">堵车</option>
+              <option value="accident">发生事故</option>
+            </select>
+          </label>
+        </div>
+
+        <div>
+          <label>
+            问题描述
+            <input name="description" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            纬度
+            <input name="lat" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            经度
+            <input name="lng" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            事件图片<br/>
+            <span></span>
+            <input type="file" name="photo0"><br/>
+            <span></span>
+            <input type="file" name="photo1"><br/>
+            <span></span>
+            <input type="file" name="photo2"><br/>
+            <span></span>
+            <input type="file" name="photo3"><br/>
+            <span></span>
+            <input type="file" name="photo4"><br/>
+          </label>
+        </div>
+
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>任务暂停后重新开始（重新开始后继续之前的状态）</h2>
+    <form method="post" action="/api/task/restart">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/restart</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            用户id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>运单数据重置</h2>
+    <form method="post" action="/api/task/data_reset">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/data_reset</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>空驶</h2>
+    <form method="post" action="/api/task/empty">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/empty</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>重载</h2>
+    <form method="post" action="/api/task/weight">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>task/weight</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>司机上报getui clientid</h2>
+    <form method="post" action="/api/driver/getui_report">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>driver/getui_report</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            个推clientid
+            <input name="clientid" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>getui 发送测试</h2>
+    <form method="post" action="/api/test/getui">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>test/getui</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            透传payload消息
+            <input name="payload" value=""><br/>
+            你有新的运单:{"msgType":"1","driver_id":"306","order_id":"61"}<br/>
+            其它会慢慢扩充:<br/>
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+	<!--
+    <h2>获得上报费用的数据结构</h2>
+    <form method="get" action="/api/cost/add">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>cost/add</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>GET</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+	-->
+
+    <h2>上报费用</h2>
+    <form method="post" action="/api/cost/add">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>cost/add</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>POST</em>
+        </h3>
+        <div>
+          <label>
+            司机id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            费用类型
+            <select name="fee_type" id="fee_type" style="width:160px;">
+              <option value="">请选择</option>
+              <option value="1">燃油费fee_type=1</option>
+              <option value="2">桥路费fee_type=2</option>
+              <option value="3">罚款fee_type=3</option>
+              <option value="4">维修费fee_type=4</option>
+              <option value="5">自定义fee_type=5</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>
+            结算类型
+            <select name="pay_type" id="pay_type" style="width:160px;">
+              <option value="">请选择</option>
+              <option value="1">卡结算pay_type=1</option>
+              <option value="2">现金结算pay_type=2</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>
+            卡结算pay_type=1时需要传预支卡id
+            <input name="card_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            纬度
+            <input name="lat" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            经度
+            <input name="lng" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            图片
+            <span></span>
+            <input type="file" name="photo"><br/>
+          </label>
+        </div>
+        <div id="fee_type_input_items"></div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>费用列表</h2>
+    <form method="get" action="/api/cost/list">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>cost/list</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>GET</em>
+        </h3>
+        <div>
+          <label>
+            当前司机的id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+
+        <div>
+          <label>
+            最后一条数据的下标
+            <input name="last_index" value="0">
+          </label>
+        </div>
+        <div>
+          <label>
+            每次需要加载的数据条目数
+            <input name="count" value="10">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <h2>费用总额</h2>
+    <form method="get" action="/api/cost/total">
+      <fieldset>
+        <h3>
+          接口地址：
+          <em>cost/total</em>
+        </h3>
+        <h3>
+          提交方式：
+          <em>GET</em>
+        </h3>
+        <div>
+          <label>
+            当前司机的id
+            <input name="driver_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            运单id
+            <input name="order_id" value="">
+          </label>
+        </div>
+        <div>
+          <label>
+            Token
+            <input name="token" value="">
+          </label>
+        </div>
+        <div>
+          <button type="submit">提交</button>
+        </div>
+      </fieldset>
+    </form>
+
+  </body>
+</html>
+<script src='/assets/js/localResizeIMG.js'></script>
+<script>
+app = {};
+app.token = '';
+app.driver_id = '';
+app.ajaxTimerId = 0;
+app.ajax = function(url, type, params, callback, options) {
+    var async = true;
+    var selfData = {};
+    var forceCallBack = forceCallBack || false;
+    var params = params || {};
+    var options = options || {};
+    var showLoading = options.showLoading || false;
+    var forceCallBack = options.forceCallBack || false;
+    var header = {};
+
+    if(type.toLowerCase()=='get') {
+        if(params.driver_id) {
+            header.driver_id = params.driver_id;
+            delete params.driver_id;
+        }
+        if(params.token) {
+            header.token = params.token;
+            delete params.token;
+        }
+    } else {
+        if(params.get('driver_id')) {
+            header.driver_id = params.get('driver_id');
+            params.delete('driver_id');
+        }
+        if(params.get('token')) {
+            header.token = params.get('token');
+            params.delete('token');
+        }
+    }
+    if(type.toLowerCase()=='get') {
+        params = $.param(params);
+    }
+
+    if(callback==null || callback==undefined) {
+        async = false;
+    }
+
+    $.ajax({
+        url: url,
+        cache: false,
+        dataType: "json",
+        type: type,
+        data: params,
+        timeout: 20000,
+        headers: {},
+        processData : false,
+        contentType : false,
+        async: async,
+        beforeSend: function(request) {
+            if(header.driver_id) {
+                request.setRequestHeader("Driver-Id", header.driver_id);
+            }
+            if(header.token) {
+                request.setRequestHeader("Token", header.token);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText);
+            selfData = false;
+        },
+        success: function(data, textStatus, jqXHR) {
+            if (callback) {
+                callback(data);
+                selfData = data;
+            } else {
+                selfData = data;
+            }
+        }
+    });
+    return selfData;
+};
+
+app.getQueryParam = function(str) {
+    return (str || document.location.search).replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
+};
+
+$('body').find('form').each(function(){
+    var form = $(this);
+    var html = new Array();
+    form.hide();
+    html.push('&nbsp;');
+    html.push($('<input type="button" value="显示"/>').bind('click', form, function(ev){
+        if($(this).val()=='显示') {
+            ev.data.show();
+            $(this).val('隐藏');
+        } else {
+            ev.data.hide();
+            $(this).val('显示');
+        }
+    }));
+    form.find('input[name], select[name]').each(function(){
+        $(this).after($(this).attr('name'));
+    });
+    form.find('button:last').bind('click', form, function(ev){
+        var subtn = this;
+        var url = ev.data.attr('action');
+        var type = ev.data.attr('method');
+        var data = ev.data.serializeArray();
+        if(type.toLowerCase()=='get') {
+            var formData = {};
+            for(var key in data) {
+                formData[data[key]['name']] = data[key]['value'];
+            }
+        } else {
+            //data = app.getQueryParam(data);
+            var formData = new FormData();
+            for(var key in data) {
+                formData.append(data[key]['name'], decodeURIComponent(data[key]['value']));
+            }
+            $(ev.data).find("img[name]").each(function(){
+                function dataURLtoBlob(dataurl) {
+                    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                    while(n--){
+                        u8arr[n] = bstr.charCodeAt(n);
+                    }
+                    return new Blob([u8arr], {type:mime});
+                }
+                var name = $(this).attr('name');
+                var fileName = $(this).attr('file-name');
+                formData.append(name, dataURLtoBlob($(this).attr('src')), fileName);
+            });
+        }
+        app.ajax(url, type, formData, function(d){
+            if(d.state>0 && d.data && d.data.driver && d.data.driver.token && d.data.driver.driver_id) {
+                app.token = d.data.driver.token;
+                app.driver_id = d.data.driver.driver_id;
+                $('input[name=driver_id],input[name=token]').each(function(){
+                    if($(this).attr('name')=='driver_id') {
+                        $(this).val(app.driver_id);
+                    } else if($(this).attr('name')=='token') {
+                        $(this).val(app.token);
+                    }
+                });
+            }
+            if($(subtn).siblings().length==0) {
+                $(subtn).after(function(){
+                    return $('<input type="button" value="清除" />').click(function(){
+                        form.find('fieldset>div:last').html('');
+                    });
+                }).after('&nbsp;');
+            }
+            form.find('fieldset>div:last').append(JSON.stringify(d)+"<br/>");
+        });
+        return false;
+    });
+    form.find('fieldset').append("<div></div>");
+    form.prev().append(html);
+});
+
+$('body').prepend(function(){
+    var html = $('\
+            <div style="color:red;display:none;">driver_id 和 token登录后就可以使用了，<br/>不用每次都填写了。</div>\
+            <button>查看说明</button>\
+            &nbsp;\
+            <button>关闭说明</button>');
+    html.filter('button:first').click(function(){
+        html.filter('div:first').show();
+    });
+    html.filter('button:last').click(function(){
+        html.filter('div:first').hide();
+    });
+    return html;
+});
+
+$(document).ready(function(){
+    $('input:file').each(function(){
+        var self = this;
+        if(!$(self).attr('name')) {
+            return;
+        }
+        $(self).localResizeIMG({
+            width: 980,
+            quality: 0.8,
+            success: function (result) {
+               var html = $('<img name="'+$(self).attr('name')+'" file-name="'+result.fileName+'" src="'+result.base64+'" style="width:200px;" />');
+               $(self).prev().html(html);
+               $(self).remove();
+            }
+        });
+    });
+
+    $('#fee_type').change(function(){
+        var url = "/api/cost/add";
+        var data = $.param({driver_id:app.driver_id, token:app.token});
+        app.ajax(url, 'get', data, function(d){
+            if(d.state>0 && d.data) {
+                var input = {};
+                var inputHtml = [];
+                var feeStruct = {};
+                for(var k in d.data) {
+                    if(d.data[k].fee_type != $('#fee_type').val()) {
+                        continue;
+                    }
+                    input = d.data[k].fee_input_items;
+                    feeStruct = d.data[k];
+                    break;
+                }
+                for(var k in input) {
+                	if(input[k].is_required==0) {
+                		input[k].name += '(选填)';
+                	}
+                    var obj = $('\
+                        <div>\
+                           <label>\
+                             '+input[k].name+'<input name="'+input[k].key+'" value="">'+input[k].key+'\
+                           </label>\
+                         </div>\
+                    ');
+                    inputHtml.push(obj);
+                }
+                $('#fee_type_input_items').html(inputHtml);
+            }
+        });
+    });
+    //$('#fee_type').trigger('change');
+});
+</script>

@@ -1,0 +1,781 @@
+<?php
+
+namespace App\Fcore;
+
+use Closure;
+//use Encore\Admin\Exception\Handle;
+use App\Fcore\Grid\Column;
+use App\Fcore\Grid\Filter;
+use App\Fcore\Grid\Model;
+use App\Fcore\Grid\Row;
+use App\Fcore\Grid\Tools;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
+use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
+use App\Fcore\Exception\Handle;
+
+class Grid
+{
+    /**
+     * The grid data model instance.
+     *
+     * @var \Encore\Admin\Grid\Model
+     */
+    protected $model;
+
+    /**
+     * Collection of all grid columns.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $columns;
+
+    /**
+     * Collection of table columns.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $dbColumns;
+
+    /**
+     * Collection of all data rows.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $rows;
+
+    /**
+     * Rows callable fucntion.
+     *
+     * @var \Closure
+     */
+    protected $rowsCallback;
+
+    /**
+     * All column names of the grid.
+     *
+     * @var array
+     */
+    public $columnNames = [];
+
+    /**
+     * Grid builder.
+     *
+     * @var \Closure
+     */
+    protected $builder;
+
+    /**
+     * Mark if the grid is builded.
+     *
+     * @var bool
+     */
+    protected $builded = false;
+
+    /**
+     * All variables in grid view.
+     *
+     * @var array
+     */
+    protected $variables = [];
+
+    /**
+     * The grid Filter.
+     *
+     * @var \Encore\Admin\Grid\Filter
+     */
+    protected $filter;
+
+    /**
+     * Resource path of the grid.
+     *
+     * @var
+     */
+    protected $resourcePath;
+
+    /**
+     * Default primary key name.
+     *
+     * @var string
+     */
+    protected $keyName = 'id';
+
+    /**
+     * Export driver.
+     *
+     * @var string
+     */
+    protected $exporter;
+
+    /**
+     * View for grid to render.
+     *
+     * @var string
+     */
+    protected $view = 'Fcore::json';
+
+    /**
+     * Per-page options.
+     *
+     * @var array
+     */
+    public $perPages = [10, 20, 30, 50, 100];
+
+    /**
+     * Default items count per-page.
+     *
+     * @var int
+     */
+    public $perPage = 20;
+
+    /**
+     * Header tools.
+     *
+     * @var Tools
+     */
+    public $tools;
+
+    /**
+     * Options for grid.
+     *
+     * @var array
+     */
+    protected $options = [
+        'usePagination'     => true,
+        'useFilter'         => true
+    ];
+
+    /**
+     * Create a new grid instance.
+     *
+     * @param Eloquent $model
+     * @param Closure  $builder
+     */
+    public function __construct(Eloquent $model, Closure $builder)
+    {
+        $this->keyName = $model->getKeyName();
+        $this->model = new Model($model);
+        $this->columns = new Collection();
+        $this->rows = new Collection();
+        $this->builder = $builder;
+
+        $this->setDbColumns();
+        $this->setupTools();
+        $this->setupFilter();
+        //$this->setupExporter();
+    }
+
+    /**
+     * Setup grid tools.
+     */
+    public function setupTools()
+    {
+        $this->tools = new Tools($this);
+    }
+
+    /**
+     * Setup grid filter.
+     *
+     * @return void
+     */
+    protected function setupFilter()
+    {
+        $this->filter = new Filter($this->model());
+    }
+
+    /**
+     * Get or set option for grid.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return $this|mixed
+     */
+    public function option($key, $value = null)
+    {
+        if (is_null($value)) {
+            return $this->options[$key];
+        }
+
+        $this->options[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get primary key name of model.
+     *
+     * @return string
+     */
+    public function getKeyName()
+    {
+        return $this->keyName ?: 'id';
+    }
+
+    /**
+     * Add column to Grid.
+     *
+     * @param string $name
+     * @param string $label
+     *
+     * @return Column
+     */
+    public function column($name, $label = '')
+    {
+        $relationName = $relationColumn = '';
+
+        if (strpos($name, '.') !== false) {
+            list($relationName, $relationColumn) = explode('.', $name);
+
+            $relation = $this->model()->eloquent()->$relationName();
+
+            $label = empty($label) ? ucfirst($relationColumn) : $label;
+
+            $name = snake_case($relationName).'.'.$relationColumn;
+        }
+
+        $column = $this->addColumn($name, $label);
+
+        if (isset($relation) && $relation instanceof Relation) {
+            $this->model()->with($relationName);
+            $column->setRelation($relationName, $relationColumn);
+        }
+
+        return $column;
+    }
+
+    /**
+     * Batch add column to grid.
+     *
+     * @example
+     * 1.$grid->columns(['name' => 'Name', 'email' => 'Email' ...]);
+     * 2.$grid->columns('name', 'email' ...)
+     *
+     * @param array $columns
+     *
+     * @return Collection|null
+     */
+    public function columns($columns = [])
+    {
+        if (func_num_args() == 0) {
+            return $this->columns;
+        }
+
+        if (func_num_args() == 1 && is_array($columns)) {
+            foreach ($columns as $column => $label) {
+                $this->column($column, $label);
+            }
+
+            return;
+        }
+
+        foreach (func_get_args() as $column) {
+            $this->column($column);
+        }
+    }
+
+    /**
+     * Add column to grid.
+     *
+     * @param string $column
+     * @param string $label
+     *
+     * @return Column
+     */
+    protected function addColumn($column = '', $label = '')
+    {
+        $column = new Column($column, $label);
+        $column->setGrid($this);
+
+        return $this->columns[] = $column;
+    }
+
+    /**
+     * Get Grid model.
+     *
+     * @return Model
+     */
+    public function model()
+    {
+        return $this->model;
+    }
+
+    /**
+     * Paginate the grid.
+     *
+     * @param int $perPage
+     *
+     * @return void
+     */
+    public function paginate($perPage = 20)
+    {
+        $this->perPage = $perPage;
+
+        $this->model()->paginate($perPage);
+    }
+
+    /**
+     * Get the grid paginator.
+     *
+     * @return mixed
+     */
+    public function paginator()
+    {
+        return new Tools\Paginator($this);
+    }
+
+    /**
+     * Disable grid pagination.
+     *
+     * @return $this
+     */
+    public function disablePagination()
+    {
+        $this->model->usePaginate(false);
+
+        $this->option('usePagination', false);
+
+        return $this;
+    }
+
+    /**
+     * If this grid use pagination.
+     *
+     * @return bool
+     */
+    public function usePagination()
+    {
+        return $this->option('usePagination');
+    }
+
+    /**
+     * Set per-page options.
+     *
+     * @param array $perPages
+     */
+    public function perPages(array $perPages)
+    {
+        $this->perPages = $perPages;
+    }
+
+    /**
+     * Build the grid.
+     *
+     * @return void
+     */
+    public function build()
+    {
+        if ($this->builded) {
+            return;
+        }
+
+        $data = $this->processFilter();
+
+        Column::setOriginalGridData($data);
+
+        $this->columns->map(function (Column $column) use (&$data) {
+            $data = $column->fill($data);
+
+            $this->columnNames[] = $column->getName();
+        });
+
+        $this->buildRows($data);
+
+        $this->builded = true;
+    }
+
+    /**
+     * Disable grid filter.
+     *
+     * @return $this
+     */
+    public function disableFilter()
+    {
+        $this->option('useFilter', false);
+
+        return $this;
+    }
+
+    /**
+     * Get filter of Grid.
+     *
+     * @return Filter
+     */
+    public function getFilter()
+    {
+        return $this->filter;
+    }
+
+    /**
+     * Process the grid filter.
+     *
+     * @return array
+     */
+    public function processFilter()
+    {
+        call_user_func($this->builder, $this);
+
+        return $this->filter->execute();
+    }
+
+    /**
+     * Set the grid filter.
+     *
+     * @param Closure $callback
+     */
+    public function filter(Closure $callback)
+    {
+        call_user_func($callback, $this->filter);
+    }
+
+    /**
+     * Render the grid filter.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
+     */
+    public function renderFilter()
+    {
+        if (!$this->option('useFilter')) {
+            return '';
+        }
+
+        return $this->filter->render();
+    }
+
+    /**
+     * Build the grid rows.
+     *
+     * @param array $data
+     *
+     * @return void
+     */
+    protected function buildRows(array $data)
+    {
+        $this->rows = collect($data)->map(function ($val, $key) {
+            $row = new Row($key, $val);
+
+            $row->setKeyName($this->keyName);
+
+            return $row;
+        });
+
+        if ($this->rowsCallback) {
+            $this->rows->map($this->rowsCallback);
+        }
+    }
+
+    /**
+     * Set grid row callback function.
+     *
+     * @param Closure $callable
+     *
+     * @return Collection|null
+     */
+    public function rows(Closure $callable = null)
+    {
+        if (is_null($callable)) {
+            return $this->rows;
+        }
+
+        $this->rowsCallback = $callable;
+    }
+
+    /**
+     * Setup grid tools.
+     *
+     * @param Closure $callback
+     *
+     * @return void
+     */
+    public function tools(Closure $callback)
+    {
+        call_user_func($callback, $this->tools);
+    }
+
+    /**
+     * Render custom tools.
+     *
+     * @return string
+     */
+    public function renderHeaderTools()
+    {
+        return $this->tools->render();
+    }
+
+    public function renderTitle() {
+        return empty($this->title) ? '' : $this->title;
+    }
+
+    /**
+     * Get current resource uri.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function resource($path = null)
+    {
+        if (!empty($path)) {
+            $this->resourcePath = $path;
+
+            return $this;
+        }
+
+        if (!empty($this->resourcePath)) {
+            return $this->resourcePath;
+        }
+
+        return app('router')->current()->getPath();
+    }
+
+    /**
+     * Get the table columns for grid.
+     *
+     * @return void
+     */
+    protected function setDbColumns()
+    {
+        $connection = $this->model()->eloquent()->getConnectionName();
+
+        $this->dbColumns = collect(Schema::connection($connection)->getColumnListing($this->model()->getTable()));
+    }
+
+    /**
+     * Handle table column for grid.
+     *
+     * @param string $method
+     * @param string $label
+     *
+     * @return bool|Column
+     */
+    protected function handleTableColumn($method, $label)
+    {
+        if ($this->dbColumns->has($method)) {
+            return $this->addColumn($method, $label);
+        }
+
+        return false;
+    }
+
+    /**
+     * Handle get mutator column for grid.
+     *
+     * @param string $method
+     * @param string $label
+     *
+     * @return bool|Column
+     */
+    protected function handleGetMutatorColumn($method, $label)
+    {
+        if ($this->model()->eloquent()->hasGetMutator($method)) {
+            return $this->addColumn($method, $label);
+        }
+
+        return false;
+    }
+
+    /**
+     * Handle relation column for grid.
+     *
+     * @param string $method
+     * @param string $label
+     *
+     * @return bool|Column
+     */
+    protected function handleRelationColumn($method, $label)
+    {
+        $model = $this->model()->eloquent();
+
+        if (!method_exists($model, $method)) {
+            return false;
+        }
+
+        if (!($relation = $model->$method()) instanceof Relation) {
+            return false;
+        }
+
+        if ($relation instanceof HasOne || $relation instanceof BelongsTo) {
+            $this->model()->with($method);
+
+            return $this->addColumn($method, $label)->setRelation(snake_case($method));
+        }
+
+        if ($relation instanceof HasMany || $relation instanceof BelongsToMany || $relation instanceof MorphToMany) {
+            $this->model()->with($method);
+
+            return $this->addColumn(snake_case($method), $label);
+        }
+
+        return false;
+    }
+
+    /**
+     * Dynamically add columns to the grid view.
+     *
+     * @param $method
+     * @param $arguments
+     *
+     * @return Column
+     */
+    public function __call($method, $arguments)
+    {
+        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
+
+        if ($this->model()->eloquent() instanceof MongodbModel) {
+            return $this->addColumn($method, $label);
+        }
+
+        if ($column = $this->handleGetMutatorColumn($method, $label)) {
+            return $column;
+        }
+
+        if ($column = $this->handleRelationColumn($method, $label)) {
+            return $column;
+        }
+
+        if ($column = $this->handleTableColumn($method, $label)) {
+            return $column;
+        }
+
+        return $this->addColumn($method, $label);
+    }
+
+    /**
+     * Register column displayers.
+     *
+     * @return void.
+     */
+    public static function registerColumnDisplayer()
+    {
+        $map = [
+            'label'         => \App\Fcore\Grid\Displayers\Label::class,
+        ];
+
+        foreach ($map as $abstract => $class) {
+            Column::extend($abstract, $class);
+        }
+    }
+
+    /**
+     * Add variables to grid view.
+     *
+     * @param array $variables
+     *
+     * @return $this
+     */
+    public function with($variables = [])
+    {
+        $this->variables = $variables;
+
+        return $this;
+    }
+
+    /**
+     * Get all variables will used in grid view.
+     *
+     * @return array
+     */
+    protected function variables()
+    {
+        $this->variables['grid'] = $this;
+
+        return $this->variables;
+    }
+
+    /**
+     * Set a view to render.
+     *
+     * @param string $view
+     * @param array  $variables
+     */
+    public function setView($view, $variables = [])
+    {
+        if (!empty($variables)) {
+            $this->with($variables);
+        }
+
+        $this->view = $view;
+    }
+
+    /**
+     * Set a view to render.
+     *
+     * @param string $view
+     * @param array  $variables
+     *
+     * @deprecated
+     */
+    public function view($view, $variables = [])
+    {
+        $this->setView($view, $variables);
+    }
+
+    /**
+     * Get the string contents of the grid view.
+     *
+     * @return string
+     */
+    public function render($format='array')
+    {
+        try {
+            $this->build();
+        } catch (\Exception $e) {
+            return Handle::renderException($e);
+        }
+        $variables = $this->variables();
+        $variables['format'] = $format;
+
+
+        foreach($this->columns() as $k=>$column) {
+            $keys[$k] = $column->getLabel();
+        }
+
+        $data = [];
+        foreach($this->rows() as $rIndex=>$row) {
+            foreach($this->columnNames as $k=>$name) {
+                $data[$rIndex][$keys[$k]] = $row->column($name);
+            }
+        }
+
+        return $format=='array' ? $data : array_pop($data);
+    }
+
+    public function getFormatData() {
+        try {
+            $this->build();
+        } catch (\Exception $e) {
+            return Handle::renderException($e);
+        }
+
+        $keys = [];
+        foreach($this->columns() as $k=>$column) {
+            $keys[$k] = $column->getLabel();
+        }
+
+        $rowData = [];
+        foreach($this->rows() as $rIndex=>$row) {
+            foreach($this->columnNames as $k=>$name) {
+                $rowData[$rIndex][$keys[$k]] = $row->column($name);
+            }
+        }
+        return $rowData;
+    }
+
+    /**
+     * Get the string contents of the grid view.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render('json');
+    }
+}
